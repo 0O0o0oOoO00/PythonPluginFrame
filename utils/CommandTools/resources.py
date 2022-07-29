@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union, List
+from typing import Union, List, NoReturn
 from abc import ABCMeta, abstractmethod
 
 __all__ = ["InputCommand", "CommandInfo", "Command", "CommandHelp"]
@@ -12,9 +12,9 @@ class InputCommand(object):
 			commandTmpList.remove('')
 		self.command = commandTmpList[0]
 		if len(commandTmpList) == 1:
-			self.parametersList = commandTmpList[1:]
-		else:
 			self.parametersList = []
+		else:
+			self.parametersList = commandTmpList[1:]
 
 
 @dataclass
@@ -39,22 +39,29 @@ class CommandHelp(object):
 
 
 class Command(metaclass=ABCMeta):
-	def __init__(self, commandName: str, pluginCommand: bool = False):
+	def __init__(self, commandName: str, pluginCommand: bool = False, changeGlobalVal: bool = False):
 		self.pluginCommand = pluginCommand
 		self.commandName = commandName
-	
-	@abstractmethod
-	def usage(self) -> str:
-		pass
-	
+		self.changeGlobalVal = changeGlobalVal
+		self.globalVarDict = dict()
+		
+	@property
 	@abstractmethod
 	def description(self) -> str:
 		pass
 	
+	@property
 	@abstractmethod
-	def printHelp(self) -> None:
+	def newGlobalVarDict(self) -> dict:
 		pass
 	
 	@abstractmethod
-	def run(self, *args, **kwargs) -> None:
+	def printHelp(self) -> NoReturn:
 		pass
+	
+	@abstractmethod
+	def run(self, inputCommand: InputCommand) -> NoReturn:
+		pass
+
+
+

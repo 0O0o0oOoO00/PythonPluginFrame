@@ -1,62 +1,67 @@
 import os
-import pathlib
+from ..utils.CommandTools.resources import Command, InputCommand
+from ..utils.PluginTools.utils import listPlugin
+from ..utils.PluginTools.utils import listParameters
 
-from PluginFrame.utils.CommandTools.resources import Command
-
-PLUGIN_PATH = pathlib.Path(os.path.dirname(__file__)) / ".." / "plugins"
-__all__ = ["ListPlugin", "ListPluginParameters"]
-
-
-def listPlugin():
-	print("Plugins:")
-	for plugin in os.listdir(PLUGIN_PATH):
-		if plugin in ["__pycache__", "ExamplePlugin"]:
-			continue
-		else:
-			print("\t", plugin)
+__all__ = ["ListPlugin", "ListPluginParameters", "Loaded"]
 
 
 class ListPlugin(Command):
 	
 	def __init__(self):
-		Command.__init__(self, "list", False)
+		super(ListPlugin, self).__init__("list", False)
 	
-	def usage(self) -> str:
-		pass
-	
+	@property
 	def description(self) -> str:
+		return "List all plugin."
+	
+	@property
+	def newGlobalVarDict(self) -> dict:
 		pass
 	
 	def printHelp(self) -> None:
-		pass
+		print("test")
 	
-	def run(self, *args, **kwargs) -> None:
-		print("baidcuaiwd")
-		
+	def run(self, inputCommand: InputCommand) -> None:
+		listPlugin()
 
 
 class ListPluginParameters(Command):
 	def __init__(self):
-		Command.__init__(self, "list", True)
+		super(ListPluginParameters, self).__init__("list", True)
 	
-	def usage(self) -> str:
-		pass
-	
+	@property
 	def description(self) -> str:
+		return "List plugin's parameters."
+	
+	@property
+	def newGlobalVarDict(self) -> dict:
 		pass
 	
 	def printHelp(self) -> None:
 		pass
 	
-	def run(self, *args, **kwargs) -> None:
-		print("neaoi")
-		
+	def run(self, inputCommand: InputCommand) -> None:
+		listParameters(self.globalVarDict["LOADED_PLUGIN_LIST"][self.globalVarDict["CURRENT_PLUGIN"]])
 
 
-if __name__ == "__main__":
-	print(PLUGIN_PATH)
-	listPlugin()
-	print(ListPluginParameters.__name__)
-	print(os.path.basename(__file__))
-	print(ListPlugin().pluginCommand)
-	print(dir(ListPlugin()))
+class Loaded(Command):
+	def __init__(self):
+		super(Loaded, self).__init__("loaded", False)
+	
+	@property
+	def description(self) -> str:
+		return "List loaded plugin."
+	
+	@property
+	def newGlobalVarDict(self) -> dict:
+		pass
+	
+	def printHelp(self) -> None:
+		pass
+	
+	def run(self, inputCommand: InputCommand) -> None:
+		print("Loaded plugins:")
+		for plugin in self.globalVarDict["LOADED_PLUGIN_LIST"].keys():
+			print("\t", plugin)
+

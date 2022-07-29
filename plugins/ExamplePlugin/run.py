@@ -10,7 +10,7 @@ class Main(Plugin):
 		self.parameter4 = None
 	
 	def parametersList(self) -> List[Parameter]:
-		return [Parameter("parameter1", int, True), Parameter("parameter2", float, True), Parameter("parameter3", bool, False), Parameter("parameter4", str, False)]
+		return [Parameter("parameter1", int, True, ""), Parameter("parameter2", float, True, ""), Parameter("parameter3", bool, False, ""), Parameter("parameter4", str, False, "")]
 	
 	def description(self) -> str:
 		pass

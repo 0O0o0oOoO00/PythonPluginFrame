@@ -1,9 +1,10 @@
 from typing import List, Union, Dict
-from resources import CommandHelp, CommandInfo
+from .resources import CommandHelp, CommandInfo, InputCommand
 from importlib.resources import Package
 import importlib
 import pathlib
 import os
+
 
 COMMAND_FILE_PATH = pathlib.Path(os.path.dirname(__file__)) / ".." / ".." / "commands"
 
@@ -39,10 +40,11 @@ def loadCommandClass(commandFile: Package, className: str) -> object:
 
 def getCommand(commandFile: Package) -> List[str]:
 	command = list()
-	for i in commandFile.__all__:
-		commandClass = loadCommandClass(loadCommandFile("list"), i)
-		if getattr(commandClass, "pluginCommand") is False:
-			command.append(i)
+	if hasattr(commandFile, "__all__"):
+		for i in commandFile.__all__:
+			commandClass = loadCommandClass(commandFile, i)
+			if getattr(commandClass, "pluginCommand") is False:
+				command.append(i)
 	return command
 
 
@@ -50,7 +52,7 @@ def getCommandDict(commandFile: Package) -> Dict[str, object]:
 	command = getCommand(commandFile)
 	commandDict = dict()
 	for i in command:
-		commandClass = loadCommandClass(loadCommandFile("list"), i)
+		commandClass = loadCommandClass(commandFile, i)
 		commandDict[commandClass.commandName] = commandClass
 	return commandDict
 
@@ -63,18 +65,19 @@ def getAllCommandDict() -> Dict[str, object]:
 	return allCommandDict
 
 
-def runCommand(command: str, allCommandDict: Union[Dict[str, object], None] = None):
+def runCommand(command: str, commandList: InputCommand, allCommandDict: Union[Dict[str, object], None] = None):
 	if allCommandDict is None:
 		allCommandDict = getAllCommandDict()
-	allCommandDict[command].run()
+	allCommandDict[command].run(commandList)
 
 
 def getPluginCommand(commandFile: Package) -> List[str]:
 	pluginCommand = list()
-	for i in commandFile.__all__:
-		pluginCommandClass = loadCommandClass(loadCommandFile("list"), i)
-		if getattr(pluginCommandClass, "pluginCommand"):
-			pluginCommand.append(i)
+	if hasattr(commandFile, "__all__"):
+		for i in commandFile.__all__:
+			pluginCommandClass = loadCommandClass(commandFile, i)
+			if getattr(pluginCommandClass, "pluginCommand"):
+				pluginCommand.append(i)
 	return pluginCommand
 
 
@@ -82,7 +85,7 @@ def getPluginCommandDict(commandFile: Package) -> Dict[str, object]:
 	pluginCommand = getPluginCommand(commandFile)
 	pluginCommandDict = dict()
 	for i in pluginCommand:
-		pluginCommandClass = loadCommandClass(loadCommandFile("list"), i)
+		pluginCommandClass = loadCommandClass(commandFile, i)
 		pluginCommandDict[pluginCommandClass.commandName] = pluginCommandClass
 	return pluginCommandDict
 
@@ -95,10 +98,10 @@ def getAllPluginCommandDict() -> Dict[str, object]:
 	return allPluginCommandDict
 
 
-def runPluginCommand(command: str, allPluginCommandDict: Union[Dict[str, object], None] = None):
+def runPluginCommand(command: str, commandList: InputCommand, allPluginCommandDict: Union[Dict[str, object], None] = None):
 	if allPluginCommandDict is None:
 		allPluginCommandDict = getAllPluginCommandDict()
-	allPluginCommandDict[command].run()
+	allPluginCommandDict[command].run(commandList)
 
 
 if __name__ == "__main__":
@@ -110,5 +113,5 @@ if __name__ == "__main__":
 	print(getAllCommandDict())
 	print(getAllPluginCommandDict())
 	print()
-	runCommand("list")
-	runPluginCommand("list")
+	# runCommand("list")
+	# runPluginCommand("list")

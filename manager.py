@@ -1,33 +1,46 @@
-import os,sys
+import os
+import sys
+import colorama
+from colorama import Fore, Style
 from pathlib import Path
-
 from utils.CommandTools.resources import InputCommand
 from utils.CommandTools.utils import getAllCommandDict, getAllPluginCommandDict
 
 
-def main():
-	global PROMPT, PLUGIN, COMMAND, PLUGIN_COMMAND
-	PROMPT = " > "
-	PLUGIN = None
+def init():
+	global DEFAULT_PROMPT, PROMPT, COMMAND, PLUGIN_COMMAND, CURRENT_PLUGIN, LOADED_PLUGIN_LIST
+	DEFAULT_PROMPT = " > "
+	PROMPT = DEFAULT_PROMPT
 	COMMAND = getAllCommandDict()
 	PLUGIN_COMMAND = getAllPluginCommandDict()
+	CURRENT_PLUGIN = None
+	LOADED_PLUGIN_LIST = dict()
+
+
+def main():
 	while True:
 		inputCommand = InputCommand(input(PROMPT))
-		if PLUGIN is None:
+		print()
+		if CURRENT_PLUGIN is None:
 			if inputCommand.command in COMMAND.keys():
-				for i in COMMAND[inputCommand.command].mainFunctionParametersList:
-					COMMAND[inputCommand.command].mainFunctionParametersDict.update({i: globals()[i]})
+				setattr(COMMAND[inputCommand.command], "globalVarDict", globals())
 				COMMAND[inputCommand.command].run(inputCommand)
+				if getattr(COMMAND[inputCommand.command], "changeGlobalVal"):
+					globals().update(COMMAND[inputCommand.command].newGlobalVarDict)
 			else:
-				print("Invalid command")
+				print(Fore.RED + "Invalid command" + Style.RESET_ALL)
 		else:
 			if inputCommand.command in PLUGIN_COMMAND.keys():
-				PLUGIN_COMMAND[inputCommand.command].run(InputCommand)
+				setattr(PLUGIN_COMMAND[inputCommand.command], "globalVarDict", globals())
+				PLUGIN_COMMAND[inputCommand.command].run(inputCommand)
+				if getattr(PLUGIN_COMMAND[inputCommand.command], "changeGlobalVal"):
+					globals().update(PLUGIN_COMMAND[inputCommand.command].newGlobalVarDict)
 			else:
-				print("Invalid command")
+				print(Fore.RED + "Invalid command" + Style.RESET_ALL)
 
 
 if __name__ == "__main__":
 	sys.path.append(str(Path(os.path.dirname(__file__)) / ".."))
-	# print(Path(os.path.dirname(__file__)) / "..")
+	colorama.init()
+	init()
 	main()
