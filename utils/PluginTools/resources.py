@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import List, Union, Type
+from typing import List, Union, Type, NoReturn
 from dataclasses import dataclass
 
 
@@ -13,14 +13,16 @@ class Parameter(object):
 
 class Plugin(metaclass=ABCMeta):
 	
+	@property
 	@abstractmethod
 	def parametersList(self) -> List[Parameter]:
 		pass
 	
+	@property
 	@abstractmethod
 	def description(self) -> str:
 		pass
 	
 	@abstractmethod
-	def run(self) -> None:
+	def run(self) -> NoReturn:
 		pass
