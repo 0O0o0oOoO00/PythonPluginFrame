@@ -29,8 +29,8 @@ def getAllPlugin() -> List[str]:
 def listParameters(pluginMain: object):
 	content = list()
 	for i, parameter in enumerate(pluginMain.parametersList):
-		content.append([parameter.name, parameter.type_.__name__, parameter.must, getattr(pluginMain, parameter.name), parameter.description])
-	print(tabulate(content, headers=["Name", "Type", "Must", "CurrentValue", "Description"]))
+		content.append([parameter.name, parameter.type_.__name__, parameter.must, parameter.default, getattr(pluginMain, parameter.name), parameter.description])
+	print(tabulate(content, headers=["Name", "Type", "Must", "Default", "CurrentValue", "Description"]))
 
 
 def getParametersDict(pluginMain: object) -> Dict[str, Parameter]:
@@ -44,6 +44,19 @@ def setParameter(pluginMain: object, parameter: str, value: Union[int, float, bo
 	if parametersDict is None:
 		parametersDict = getParametersDict(pluginMain)
 	setattr(pluginMain, parameter, parametersDict[parameter].type_(value))
+
+
+def unsetParameter(pluginMain: object, parameter: str, parametersDict: Union[Dict[str, Parameter], None] = None):
+	if parametersDict is None:
+		parametersDict = getParametersDict(pluginMain)
+	if parametersDict[parameter].type_ == int:
+		setattr(pluginMain, parameter, 0)
+	elif parametersDict[parameter].type_ == float:
+		setattr(pluginMain, parameter, 0.0)
+	elif parametersDict[parameter].type_ == bool:
+		setattr(pluginMain, parameter, False)
+	elif parametersDict[parameter].type_ == str:
+		setattr(pluginMain, parameter, "")
 
 
 def loadPlugin(pluginName: str) -> Package:

@@ -8,6 +8,7 @@ class Parameter(object):
 	name: str
 	type_: Union[Type[int], Type[float], Type[bool], Type[str]]
 	must: bool
+	default: Union[int, float, bool, str, None]
 	description: Union[None, str] = None
 
 

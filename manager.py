@@ -19,24 +19,25 @@ def init():
 
 def main():
 	while True:
-		inputCommand = InputCommand(input(PROMPT))
-		print()
-		if CURRENT_PLUGIN is None:
-			if inputCommand.command in COMMAND.keys():
-				setattr(COMMAND[inputCommand.command], "globalVarDict", globals())
-				COMMAND[inputCommand.command].run(inputCommand)
-				if getattr(COMMAND[inputCommand.command], "changeGlobalVal"):
-					globals().update(COMMAND[inputCommand.command].newGlobalVarDict)
+		inputCommandStr = input(PROMPT)
+		if inputCommandStr:
+			inputCommand = InputCommand(inputCommandStr)
+			if CURRENT_PLUGIN is None:
+				if inputCommand.command in COMMAND.keys():
+					setattr(COMMAND[inputCommand.command], "globalVarDict", globals())
+					COMMAND[inputCommand.command].run(inputCommand)
+					if getattr(COMMAND[inputCommand.command], "changeGlobalVal"):
+						globals().update(COMMAND[inputCommand.command].newGlobalVarDict)
+				else:
+					print(Fore.RED + "Invalid command" + Style.RESET_ALL)
 			else:
-				print(Fore.RED + "Invalid command" + Style.RESET_ALL)
-		else:
-			if inputCommand.command in PLUGIN_COMMAND.keys():
-				setattr(PLUGIN_COMMAND[inputCommand.command], "globalVarDict", globals())
-				PLUGIN_COMMAND[inputCommand.command].run(inputCommand)
-				if getattr(PLUGIN_COMMAND[inputCommand.command], "changeGlobalVal"):
-					globals().update(PLUGIN_COMMAND[inputCommand.command].newGlobalVarDict)
-			else:
-				print(Fore.RED + "Invalid command" + Style.RESET_ALL)
+				if inputCommand.command in PLUGIN_COMMAND.keys():
+					setattr(PLUGIN_COMMAND[inputCommand.command], "globalVarDict", globals())
+					PLUGIN_COMMAND[inputCommand.command].run(inputCommand)
+					if getattr(PLUGIN_COMMAND[inputCommand.command], "changeGlobalVal"):
+						globals().update(PLUGIN_COMMAND[inputCommand.command].newGlobalVarDict)
+				else:
+					print(Fore.RED + "Invalid command" + Style.RESET_ALL)
 
 
 if __name__ == "__main__":

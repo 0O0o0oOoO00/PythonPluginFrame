@@ -1,6 +1,6 @@
 from typing import NoReturn
 from ..utils.CommandTools.resources import Command, InputCommand
-from ..utils.PluginTools.utils import getParametersDict, setParameter
+from ..utils.PluginTools.utils import getParametersDict, setParameter, unsetParameter
 
 __all__ = ["SetParameters", "UnsetParameters"]
 
@@ -52,7 +52,8 @@ class UnsetParameters(Command):
 		pluginMain = self.globalVarDict["LOADED_PLUGIN_LIST"][self.globalVarDict["CURRENT_PLUGIN"]]
 		if len(inputCommand.parametersList) == 0:
 			for i in pluginMain.parametersList:
-				setattr(pluginMain, i.name, None)
+				unsetParameter(pluginMain, i.name)
 		else:
 			for i in inputCommand.parametersList:
-				setattr(pluginMain, i, None)
+				unsetParameter(pluginMain, i)
+				

@@ -1,13 +1,14 @@
 from dataclasses import dataclass
 from typing import Union, List, NoReturn
 from abc import ABCMeta, abstractmethod
+import shlex
 
 __all__ = ["InputCommand", "CommandInfo", "Command", "CommandHelp"]
 
 
 class InputCommand(object):
 	def __init__(self, commandStr: str) -> None:
-		commandTmpList = commandStr.split(" ")
+		commandTmpList = shlex.split(commandStr)
 		while "" in commandTmpList:
 			commandTmpList.remove('')
 		self.command = commandTmpList[0]
